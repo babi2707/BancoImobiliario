@@ -3,6 +3,7 @@ body {
 }
 
 .header h1 {
+    margin-top: 20px;
     color: #c70808;
     font-size: 50px;
     font-weight: bolder;
@@ -26,5 +27,5 @@ body {
 }
 
 .btn-gradient:hover {
-    background: linear-gradient(45deg, #e60000, #0000e6);
+    background: linear-gradient(45deg, #e46868, #6161f1);
 }
