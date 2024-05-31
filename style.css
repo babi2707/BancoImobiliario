@@ -1,5 +1,30 @@
+body {
+    background-color: antiquewhite;
+}
+
 .header h1 {
     color: #c70808;
     font-size: 50px;
     font-weight: bolder;
+}
+
+.formLogin {
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn-gradient {
+    background: linear-gradient(45deg, #ff0000, #0000ff);
+    color: #ffffff;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(45deg, #e60000, #0000e6);
 }
