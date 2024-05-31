@@ -83,7 +83,6 @@ import {
       try {
         const userCredential = await signInWithEmailAndPassword(auth, input.email, input.senha);
         currentUser = userCredential.user;
-        await updateSaldo();
         alert("Usuário logado com sucesso!");
         location.href = "home.html";
       } catch (error) {
