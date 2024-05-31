@@ -21,30 +21,10 @@ import {
   const formEsqueci = document.getElementById("formE");
   const formTransferencia = document.getElementById("formTransferencia");
   const saldoElement = document.getElementById("saldo");
+  const quantia = document.getElementById("quantia");
   const tipoDestinatario = document.getElementById("tipoDestinatario");
   const destinatarioInput = document.getElementById("destinatario");
   let currentUser;
-  
-  // Listener para mudanças na autenticação
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      currentUser = user;
-      updateSaldo();
-    } else {
-      currentUser = null;
-      saldoElement.textContent = "0.00";
-    }
-  });
-  
-  async function updateSaldo() {
-    if (currentUser) {
-      const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        saldoElement.textContent = userData.saldo.toFixed(2);
-      }
-    }
-  }
   
   if (formCadastro !== null) {
     formCadastro.onsubmit = async (event) => {
@@ -137,75 +117,7 @@ import {
     } else {
       destinatarioInput.disabled = false;
     }
-  });
-  
-  if (formTransferencia !== null) {
-    formTransferencia.onsubmit = async (event) => {
-      event.preventDefault();
-  
-      const tipo = tipoDestinatario.value;
-      const destinatario = destinatarioInput.value;
-      const quantia = parseFloat(document.getElementById("quantia").value);
-  
-      if (quantia <= 0) {
-        alert("Por favor, insira uma quantia válida.");
-        return;
-      }
-  
-      try {
-        if (!currentUser) {
-          throw new Error("Usuário não autenticado.");
-        }
-  
-        // Verificar saldo do usuário atual
-        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
-        console.log(userDoc);
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          if (userData.saldo < quantia) {
-            alert("Saldo insuficiente.");
-            return;
-          }
-  
-          if (tipo === "usuario") {
-            // Transferência para usuário
-            const q = query(collection(db, "users"), where("user", "==", destinatario));
-            const querySnapshot = await getDocs(q);
-  
-            if (querySnapshot.empty) {
-              alert("Usuário destinatário não encontrado.");
-              return;
-            }
-  
-            const destinatarioDoc = querySnapshot.docs[0];
-            const destinatarioData = destinatarioDoc.data();
-  
-            // Atualizar saldo do usuário destinatário
-            const novoSaldoDestinatario = destinatarioData.saldo + quantia;
-            await updateDoc(doc(db, "users", destinatarioDoc.id), {
-              saldo: novoSaldoDestinatario,
-            });
-          }
-  
-          // Atualizar saldo do usuário atual
-          const novoSaldo = userData.saldo - quantia;
-          await updateDoc(doc(db, "users", currentUser.uid), {
-            saldo: novoSaldo,
-          });
-  
-          await updateSaldo();
-  
-          alert("Transferência realizada com sucesso!");
-        } else {
-          alert("Usuário atual não encontrado.");
-        }
-      } catch (error) {
-        console.error("Erro ao realizar transferência: ", error);
-        alert("Erro ao realizar transferência: " + error.message);
-      }
-    };
-  }
-  
+  });  
   
   function logoutUser() {
     signOut(auth)
