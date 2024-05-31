@@ -6,6 +6,8 @@ import {
   addDoc,
   onSnapshot,
   getDocs,
+  query,
+  where,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import {
   getAuth,
@@ -41,6 +43,8 @@ export {
   addDoc,
   onSnapshot,
   getDocs,
+  query,
+  where,
   auth,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
