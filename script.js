@@ -305,6 +305,11 @@ window.onload = (event) => {
         location.href = "index.html";
       }
     });
+
+    // Recarregar a página a cada 5 segundos
+    setInterval(() => {
+      location.reload();
+    }, 5000);
   }
 };
 
