@@ -315,7 +315,7 @@ window.onload = (event) => {
     // Recarregar a página a cada 5 segundos
     setInterval(() => {
       location.reload();
-    }, 5000);
+    }, 60000);
   }
 };
 
