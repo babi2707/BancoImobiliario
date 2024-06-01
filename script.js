@@ -289,6 +289,12 @@ async function carregarUsuario(user) {
     if (saldoElement) {
       saldoElement.innerText = saldo.toFixed(2);
     }
+
+    // Atualizar o nome do usuário na interface
+    const usuarioNameElement = document.getElementById("usuarioName");
+    if (usuarioNameElement) {
+      usuarioNameElement.innerText = "Nome de usuário: " + userData.user;
+    }
   } catch (error) {
     console.error("Erro ao carregar o saldo: ", error);
     alert("Erro ao carregar o saldo: " + error.message);
