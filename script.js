@@ -160,7 +160,6 @@ if (formTransferencia !== null) {
 
       // Pegar o saldo atual do usuário
       const saldo = userData.saldo;
-      saldoElement.innerText = saldo.toFixed(2);
 
       // Calcular o novo saldo
       const novoSaldo = saldo - valor;
