@@ -31,3 +31,15 @@ body {
 .btn-gradient:hover {
     background: linear-gradient(45deg, #e46868, #6161f1);
 }
+
+#userErro {
+    color: red;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
+#userInst {
+    color: green;
+    font-size: 15px;
+    margin-bottom: 20px;
+}

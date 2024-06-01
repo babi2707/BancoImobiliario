@@ -46,7 +46,8 @@ if (formCadastro !== null) {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        alert("Nome de usuário já existe. Por favor, escolha outro.");
+        document.getElementById("username").style.border = "1px solid red";
+        document.getElementById("userErro").innerText = "Nome de usuário já existe. Por favor, escolha outro.";
         return;
       }
 
@@ -67,11 +68,10 @@ if (formCadastro !== null) {
         saldo: dados.saldo,
       });
 
-      alert("Usuário cadastrado com sucesso!");
       location.href = "index.html";
     } catch (error) {
       console.error("Erro ao cadastrar usuário: ", error);
-      alert("Erro ao cadastrar usuário: " + error.message);
+      document.getElementById("userErro").innerText = "Erro ao cadastrar usuário: " + error.message;
     }
   };
 }
@@ -92,11 +92,10 @@ if (formLogin !== null) {
         input.senha
       );
       currentUser = userCredential.user;
-      alert("Usuário logado com sucesso!");
       location.href = "home.html";
     } catch (error) {
       console.error("Erro ao fazer login: ", error);
-      alert("Usuário ou senha inválidos!");
+      document.getElementById("userErro").innerText = "Usuário ou senha inválidos!";
     }
   };
 }
@@ -110,10 +109,11 @@ if (formEsqueci !== null) {
     try {
       await sendPasswordResetEmail(auth, email);
       alert("Um e-mail foi enviado para redefinir a senha!");
+      document.getElementById("userInst").innerText = "Um e-mail foi enviado para redefinir a senha!";
       location.href = "index.html";
     } catch (error) {
       console.error("Erro ao enviar e-mail de redefinição de senha: ", error);
-      alert("Erro ao enviar o e-mail para redefinir a senha!");
+      document.getElementById("userErro").innerText = "Erro ao enviar o e-mail para redefinir a senha!";
     }
   };
 }
@@ -149,7 +149,7 @@ if (formTransferencia !== null) {
       const user = auth.currentUser;
 
       if (!user) {
-        alert("Nenhum usuário logado.");
+        document.getElementById("userErro").innerText = "Nenhum usuário logado.";
         return;
       }
 
@@ -161,7 +161,7 @@ if (formTransferencia !== null) {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        alert("Usuário não encontrado no banco de dados.");
+        document.getElementById("userErro").innerText = "Usuário não encontrado no banco de dados.";
         return;
       }
 
@@ -181,7 +181,7 @@ if (formTransferencia !== null) {
       }
 
       if (novoSaldo < 0) {
-        alert("Saldo insuficiente.");
+        document.getElementById("userErro").innerText = "Saldo insuficiente.";
         return;
       }
 
@@ -200,7 +200,7 @@ if (formTransferencia !== null) {
         const querySnapshotDestinatario = await getDocs(qDestinatario);
 
         if (querySnapshotDestinatario.empty) {
-          alert("Destinatário não encontrado no banco de dados.");
+          document.getElementById("userErro").innerText = "Destinatário não encontrado no banco de dados.";
           return;
         }
 
@@ -220,7 +220,7 @@ if (formTransferencia !== null) {
 
       // Atualizar o saldo na interface do usuário
       saldoElement.innerText = novoSaldo.toFixed(2);
-      alert("Transferência realizada com sucesso!");
+      document.getElementById("userInst").innerText = "Transferência realizada com sucesso!";
 
       // Limpar os campos de entrada após a transferência
       quantia.value = "";
@@ -228,7 +228,7 @@ if (formTransferencia !== null) {
 
     } catch (error) {
       console.error("Erro ao realizar transferência: ", error);
-      alert("Erro ao realizar transferência: " + error.message);
+      document.getElementById("userErro").innerText = "Erro ao realizar transferência: " + error.message;
     }
   };
 }
@@ -282,7 +282,6 @@ window.onload = (event) => {
 function logoutUser() {
   signOut(auth)
     .then(() => {
-      alert("Usuário deslogado com sucesso!");
       location.href = "index.html";
     })
     .catch((error) => {
