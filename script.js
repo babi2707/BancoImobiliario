@@ -26,7 +26,6 @@ const tipoDestinatario = document.getElementById("tipoDestinatario");
 const tipoTransferencia = document.getElementById("tipoTransferencia");
 const destinatarioInput = document.getElementById("destinatario");
 let currentUser;
-let saldoUser;
 
 if (formCadastro !== null) {
   formCadastro.onsubmit = async (event) => {
@@ -173,9 +172,8 @@ if (formTransferencia !== null) {
       // Pegar o saldo atual do usuário
       const saldo = userData.saldo;
 
-      // Calcular o novo saldo
+      // Calcular o novo saldo do usuário logado
       let novoSaldo;
-
       if (tipoTransferencia.value === "receber") {
         novoSaldo = saldo + valor;
       } else {
@@ -187,15 +185,46 @@ if (formTransferencia !== null) {
         return;
       }
 
-      // Atualizar o saldo no Firestore
+      // Atualizar o saldo no Firestore do usuário logado
       const userDocRef = doc(db, "users", userDoc.id);
       await updateDoc(userDocRef, {
         saldo: novoSaldo,
       });
 
+      // Se o tipo de transferência é "enviar", atualizar o saldo do destinatário
+      if (tipoTransferencia.value === "pagar") {
+        const destinatarioUser = destinatarioInput.value;
+
+        // Obter o documento do destinatário
+        const qDestinatario = query(usersRef, where("user", "==", destinatarioUser));
+        const querySnapshotDestinatario = await getDocs(qDestinatario);
+
+        if (querySnapshotDestinatario.empty) {
+          alert("Destinatário não encontrado no banco de dados.");
+          return;
+        }
+
+        // Assumimos que há apenas um documento por usuário
+        const destinatarioDoc = querySnapshotDestinatario.docs[0];
+        const destinatarioData = destinatarioDoc.data();
+
+        // Calcular o novo saldo do destinatário
+        const novoSaldoDestinatario = destinatarioData.saldo + valor;
+
+        // Atualizar o saldo no Firestore do destinatário
+        const destinatarioDocRef = doc(db, "users", destinatarioDoc.id);
+        await updateDoc(destinatarioDocRef, {
+          saldo: novoSaldoDestinatario,
+        });
+      }
+
       // Atualizar o saldo na interface do usuário
       saldoElement.innerText = novoSaldo.toFixed(2);
       alert("Transferência realizada com sucesso!");
+
+      // Limpar os campos de entrada após a transferência
+      quantia.value = "";
+      destinatarioInput.value = "";
 
     } catch (error) {
       console.error("Erro ao realizar transferência: ", error);
@@ -204,6 +233,51 @@ if (formTransferencia !== null) {
   };
 }
 
+
+async function carregarUsuario(user) {
+  try {
+    // Acessar a coleção de usuários
+    const usersRef = collection(db, "users");
+
+    // Obter o documento do usuário logado
+    const q = query(usersRef, where("uid", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      alert("Usuário não encontrado no banco de dados.");
+      return;
+    }
+
+    // Assumimos que há apenas um documento por usuário
+    const userDoc = querySnapshot.docs[0];
+    const userData = userDoc.data();
+
+    // Pegar o saldo atual do usuário
+    const saldo = userData.saldo;
+
+    // Atualizar o saldo na interface do usuário
+    const saldoElement = document.getElementById("saldo");
+    if (saldoElement) {
+      saldoElement.innerText = saldo.toFixed(2);
+    }
+  } catch (error) {
+    console.error("Erro ao carregar o saldo: ", error);
+    alert("Erro ao carregar o saldo: " + error.message);
+  }
+}
+
+window.onload = (event) => {
+  if (window.location.pathname.endsWith("home.html")) {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        carregarUsuario(user);
+      } else {
+        alert("Nenhum usuário logado. Redirecionando para a página de login.");
+        location.href = "index.html";
+      }
+    });
+  }
+};
 
 function logoutUser() {
   signOut(auth)
