@@ -43,7 +43,14 @@
         <div>
             <h2>Seu saldo: R$<span id="saldo">27000.00</span></h2>
             <form id="formTransferencia" class="formLogin">
-                <h3>Enviar Dinheiro</h3>
+                <h3>Transferência bancária</h3>
+                <div class="mb-3">
+                    <label for="tipoTransferencia" class="form-label">Tipo de Transferência</label>
+                    <select id="tipoTransferencia" class="form-control" required>
+                        <option value="pagar">Pagar</option>
+                        <option value="receber">Receber</option>
+                    </select>
+                </div>
                 <div class="mb-3">
                     <label for="tipoDestinatario" class="form-label">Tipo de Destinatário</label>
                     <select id="tipoDestinatario" class="form-control" required>

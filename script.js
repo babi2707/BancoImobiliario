@@ -23,6 +23,7 @@ const formTransferencia = document.getElementById("formTransferencia");
 const saldoElement = document.getElementById("saldo");
 const quantia = document.getElementById("quantia");
 const tipoDestinatario = document.getElementById("tipoDestinatario");
+const tipoTransferencia = document.getElementById("tipoTransferencia");
 const destinatarioInput = document.getElementById("destinatario");
 let currentUser;
 let saldoUser;
@@ -127,6 +128,17 @@ tipoDestinatario.addEventListener("change", () => {
   }
 });
 
+tipoTransferencia.addEventListener("change", () => {
+  if (tipoTransferencia.value === "receber") {
+    destinatarioInput.disabled = true;
+    tipoDestinatario.disabled = true;
+    destinatarioInput.value = "";
+  } else {
+    destinatarioInput.disabled = false;
+    tipoDestinatario.disabled = false;
+  }
+});
+
 if (formTransferencia !== null) {
   formTransferencia.onsubmit = async (event) => {
     event.preventDefault();
@@ -162,7 +174,13 @@ if (formTransferencia !== null) {
       const saldo = userData.saldo;
 
       // Calcular o novo saldo
-      const novoSaldo = saldo - valor;
+      let novoSaldo;
+
+      if (tipoTransferencia.value === "receber") {
+        novoSaldo = saldo + valor;
+      } else {
+        novoSaldo = saldo - valor;
+      }
 
       if (novoSaldo < 0) {
         alert("Saldo insuficiente.");
