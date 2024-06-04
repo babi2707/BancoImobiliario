@@ -38,6 +38,12 @@ body {
     margin-bottom: 20px;
 }
 
+#userError {
+    color: red;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
 #userInst {
     color: green;
     font-size: 15px;

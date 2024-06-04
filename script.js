@@ -30,6 +30,17 @@ let listaUsers = [];
 const add = document.getElementById("adicionarUser");
 let currentUser;
 
+function atualizarDestinatarios() {
+  destinatarioInput.innerHTML =
+    '<option value="0">Selecione um usuário</option>';
+  listaUsers.forEach((user) => {
+    const option = document.createElement("option");
+    option.value = user;
+    option.text = user;
+    destinatarioInput.appendChild(option);
+  });
+}
+
 if (formCadastro !== null) {
   formCadastro.onsubmit = async (event) => {
     event.preventDefault();
@@ -232,7 +243,7 @@ if (formTransferencia !== null) {
             document.getElementById("userErro").style.display = "none";
           }, 5000);
           quantia.value = "";
-          destinatarioInput.value = "";
+          destinatarioInput.value = 0;
           return;
         } else {
           // Calcular o novo saldo do destinatário
@@ -314,17 +325,85 @@ window.onload = (event) => {
         location.href = "index.html";
       }
     });
-
   }
 };
 
 if (add !== null) {
-  add.addEventListener("click", () => {
-    listaUsers.push(participantes.value);
-    destinatarioInput.setAttribute("value", listaUsers);
-  });
-}
+  add.onclick = async () => {
+    const newUser = participantes.value;
+    if (newUser && !listaUsers.includes(newUser)) {
+      // Verifica se o nome de usuário inserido não é o mesmo que o nome de usuário do usuário logado
+      if (newUser === currentUser) {
+        alert("Você não pode adicionar seu próprio nome de usuário.");
+        return;
+      }
 
+      try {
+        const user = auth.currentUser;
+
+        if (!user) {
+          document.getElementById("userError").innerText =
+            "Nenhum usuário logado.";
+          return;
+        }
+
+        const userRef = collection(db, "users");
+        const q = query(userRef, where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+          document.getElementById("userError").innerText =
+            "Usuário não encontrado no banco de dados.";
+            participantes.value = "";
+          return;
+        }
+
+        const destinatarioUser = participantes.value;
+
+        // Obter o documento do destinatário
+        const qDestinatario = query(
+          userRef,
+          where("user", "==", destinatarioUser)
+        );
+        const querySnapshotDestinatario = await getDocs(qDestinatario);
+
+        if (querySnapshotDestinatario.empty) {
+          document.getElementById("userError").innerText =
+            "Nome de usuário não encontrado no banco de dados.";
+            participantes.value = "";
+          setTimeout(() => {
+            document.getElementById("userError").style.display = "none";
+          }, 5000);
+          return;
+        }
+
+        // Assumimos que há apenas um documento por usuário
+        const destinatarioDoc = querySnapshotDestinatario.docs[0];
+        const destinatarioData = destinatarioDoc.data();
+
+        if (destinatarioData.uid === user.uid) {
+          document.getElementById("userError").innerText =
+            "Destinatário não pode ser o usuário atual.";
+            participantes.value = "";
+          setTimeout(() => {
+            document.getElementById("userError").style.display = "none";
+          }, 5000);
+          return;
+        } else {
+          listaUsers.push(newUser);
+          atualizarDestinatarios();
+        }
+
+        participantes.value = "";
+      } catch (error) {
+        console.error("Erro ao verificar usuário: ", error);
+        alert("Erro ao verificar usuário: " + error.message);
+      }
+    } else {
+      alert("Nome de usuário inválido ou já adicionado.");
+    }
+  };
+}
 
 function logoutUser() {
   signOut(auth)
