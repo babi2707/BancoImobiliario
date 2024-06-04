@@ -37,12 +37,16 @@
         <div class="mb-3">
             <button id="logout" class="btn btn-gradient w-100">Deslogar</button>
             <div id="usuarioName"></div>
+            <div id="dropUsers" class="d-flex justify-content-between mb-3">
+                <input id="usuariosParticipantes" type="text" class="form-control" placeholder="Digite o nome do usuário" required />
+                <button id="adicionarUser" class="btn btn-gradient">Adicionar</button>
+            </div>
         </div>
     </div>
 
     <div class="page d-flex justify-content-center align-items-center">
         <div>
-            <h2>Seu saldo: R$<span id="saldo">27000.00</span></h2>
+            <h2>Seu saldo: R$<span id="saldo"></span></h2>
             <form id="formTransferencia" class="formLogin">
                 <h3>Transferência bancária</h3>
                 <div class="mb-3">
@@ -61,7 +65,9 @@
                 </div>
                 <div class="mb-3">
                     <label for="destinatario" class="form-label">Usuário Destinatário</label>
-                    <input id="destinatario" type="text" class="form-control" placeholder="Digite o nome do usuário" required />
+                    <select id="destinatario" class="form-control" required>
+                        <option value="0">Selecione um usuário</option>
+                    </select>
                 </div>
                 <div class="mb-3">
                     <label for="quantia" class="form-label">Quantia (R$)</label>

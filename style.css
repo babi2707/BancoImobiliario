@@ -49,3 +49,11 @@ body {
     margin: 10px;
     font-weight: bold;
 }
+
+#dropUsers {
+    margin: 10px;
+}
+
+#dropUsers button {
+    margin-left: 5px;
+}

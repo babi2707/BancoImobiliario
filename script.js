@@ -25,6 +25,9 @@ const quantia = document.getElementById("quantia");
 const tipoDestinatario = document.getElementById("tipoDestinatario");
 const tipoTransferencia = document.getElementById("tipoTransferencia");
 const destinatarioInput = document.getElementById("destinatario");
+const participantes = document.getElementById("usuariosParticipantes");
+let listaUsers = [];
+const add = document.getElementById("adicionarUser");
 let currentUser;
 
 if (formCadastro !== null) {
@@ -314,6 +317,14 @@ window.onload = (event) => {
 
   }
 };
+
+if (add !== null) {
+  add.addEventListener("click", () => {
+    listaUsers.push(participantes.value);
+    destinatarioInput.setAttribute("value", listaUsers);
+  });
+}
+
 
 function logoutUser() {
   signOut(auth)
