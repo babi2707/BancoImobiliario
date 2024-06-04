@@ -26,6 +26,8 @@ const tipoDestinatario = document.getElementById("tipoDestinatario");
 const tipoTransferencia = document.getElementById("tipoTransferencia");
 const destinatarioInput = document.getElementById("destinatario");
 const participantes = document.getElementById("usuariosParticipantes");
+const logoutButton = document.getElementById("logout");
+const quitButton = document.getElementById("quit");
 let listaUsers = [];
 const add = document.getElementById("adicionarUser");
 let currentUser;
@@ -39,6 +41,14 @@ function atualizarDestinatarios() {
     option.text = user;
     destinatarioInput.appendChild(option);
   });
+}
+
+function carregarListaDoLocalStorage() {
+  const lista = localStorage.getItem("listaUsers");
+  if (lista) {
+    listaUsers = JSON.parse(lista);
+    atualizarDestinatarios();
+  }
 }
 
 if (formCadastro !== null) {
@@ -320,6 +330,7 @@ window.onload = (event) => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         carregarUsuario(user);
+        carregarListaDoLocalStorage();
       } else {
         alert("Nenhum usuário logado. Redirecionando para a página de login.");
         location.href = "index.html";
@@ -391,6 +402,7 @@ if (add !== null) {
           return;
         } else {
           listaUsers.push(newUser);
+          localStorage.setItem("listaUsers", JSON.stringify(listaUsers));
           atualizarDestinatarios();
         }
 
@@ -416,10 +428,14 @@ function logoutUser() {
     });
 }
 
-const logoutButton = document.getElementById("logout");
-
 if (logoutButton !== null) {
   logoutButton.addEventListener("click", () => {
     logoutUser();
+  });
+}
+
+if (quitButton !== null) {
+  quitButton.addEventListener("click", () => {
+    
   });
 }
