@@ -178,8 +178,8 @@ if (formTransferencia !== null) {
       const user = auth.currentUser;
 
       if (!user) {
-        document.getElementById("userErro").innerText =
-          "Nenhum usuário logado.";
+        document.getElementById("userErro").innerText = "Nenhum usuário logado.";
+        destinatarioInput.value = "0";
         return;
       }
 
@@ -191,8 +191,8 @@ if (formTransferencia !== null) {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        document.getElementById("userErro").innerText =
-          "Usuário não encontrado no banco de dados.";
+        document.getElementById("userErro").innerText = "Usuário não encontrado no banco de dados.";
+        destinatarioInput.value = "0";
         return;
       }
 
@@ -213,6 +213,7 @@ if (formTransferencia !== null) {
 
       if (novoSaldo < 0) {
         document.getElementById("userErro").innerText = "Saldo insuficiente.";
+        destinatarioInput.value = "0";
         return;
       }
 
@@ -223,22 +224,16 @@ if (formTransferencia !== null) {
       });
 
       // Se o tipo de transferência é "enviar", atualizar o saldo do destinatário
-      if (
-        tipoTransferencia.value === "pagar" &&
-        tipoDestinatario.value === "usuario"
-      ) {
+      if (tipoTransferencia.value === "pagar" && tipoDestinatario.value === "usuario") {
         const destinatarioUser = destinatarioInput.value;
 
         // Obter o documento do destinatário
-        const qDestinatario = query(
-          usersRef,
-          where("user", "==", destinatarioUser)
-        );
+        const qDestinatario = query(usersRef, where("user", "==", destinatarioUser));
         const querySnapshotDestinatario = await getDocs(qDestinatario);
 
         if (querySnapshotDestinatario.empty) {
-          document.getElementById("userErro").innerText =
-            "Destinatário não encontrado no banco de dados.";
+          document.getElementById("userErro").innerText = "Destinatário não encontrado no banco de dados.";
+          destinatarioInput.value = "0";
           return;
         }
 
@@ -247,13 +242,12 @@ if (formTransferencia !== null) {
         const destinatarioData = destinatarioDoc.data();
 
         if (destinatarioData.uid === user.uid) {
-          document.getElementById("userErro").innerText =
-            "Destinatário não pode ser o usuário atual.";
+          document.getElementById("userErro").innerText = "Destinatário não pode ser o usuário atual.";
           setTimeout(() => {
             document.getElementById("userErro").style.display = "none";
           }, 5000);
           quantia.value = "";
-          destinatarioInput.value = 0;
+          destinatarioInput.value = "0";
           return;
         } else {
           // Calcular o novo saldo do destinatário
@@ -269,8 +263,7 @@ if (formTransferencia !== null) {
 
       // Atualizar o saldo na interface do usuário
       saldoElement.innerText = novoSaldo.toFixed(2);
-      document.getElementById("userInst").innerText =
-        "Transferência realizada com sucesso!";
+      document.getElementById("userInst").innerText = "Transferência realizada com sucesso!";
 
       setTimeout(() => {
         document.getElementById("userInst").style.display = "none";
@@ -278,11 +271,11 @@ if (formTransferencia !== null) {
 
       // Limpar os campos de entrada após a transferência
       quantia.value = "";
-      destinatarioInput.value = "";
+      destinatarioInput.value = "0";
     } catch (error) {
       console.error("Erro ao realizar transferência: ", error);
-      document.getElementById("userErro").innerText =
-        "Erro ao realizar transferência: " + error.message;
+      document.getElementById("userErro").innerText = "Erro ao realizar transferência: " + error.message;
+      destinatarioInput.value = "0";
     }
   };
 }
@@ -435,7 +428,56 @@ if (logoutButton !== null) {
 }
 
 if (quitButton !== null) {
-  quitButton.addEventListener("click", () => {
-    
+  quitButton.addEventListener("click", async () => {
+    try {
+      // Limpar a lista de usuários do localStorage
+      localStorage.removeItem("listaUsers");
+      listaUsers = [];
+      atualizarDestinatarios();
+
+      // Obter o usuário atual
+      const user = auth.currentUser;
+
+      if (!user) {
+        document.getElementById("userErro").innerText = "Nenhum usuário logado.";
+        return;
+      }
+
+      // Acessar a coleção de usuários
+      const usersRef = collection(db, "users");
+
+      // Obter o documento do usuário logado
+      const q = query(usersRef, where("uid", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        document.getElementById("userErro").innerText = "Usuário não encontrado no banco de dados.";
+        return;
+      }
+
+      // Assumimos que há apenas um documento por usuário
+      const userDoc = querySnapshot.docs[0];
+      const userDocRef = doc(db, "users", userDoc.id);
+
+      // Atualizar o saldo no Firestore do usuário logado
+      const novoSaldo = 27000.00;
+      await updateDoc(userDocRef, {
+        saldo: novoSaldo,
+      });
+
+      // Atualizar o saldo na interface do usuário
+      if (saldoElement) {
+        saldoElement.innerText = novoSaldo.toFixed(2);
+      }
+
+      document.getElementById("userInst").innerText = "Saldo redefinido para R$ 27000,00.";
+
+      setTimeout(() => {
+        document.getElementById("userInst").style.display = "none";
+      }, 5000);
+    } catch (error) {
+      console.error("Erro ao redefinir o saldo: ", error);
+      document.getElementById("userErro").innerText = "Erro ao redefinir o saldo: " + error.message;
+    }
   });
 }
