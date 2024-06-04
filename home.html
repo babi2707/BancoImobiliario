@@ -82,8 +82,21 @@
     </div>
 
     <div class="page d-flex justify-content-center align-items-center">
-        <div class="mb-3">
+        <div class="d-flex justify-content-between mb-3">
             <button id="quit" class="btn btn-danger w-100">Encerrar partida</button>
+            <button id="show" class="btn btn-gradient" data-bs-toggle="modal" data-bs-target="#saldoModal">Saldos</button>
+
+            <div class="modal fade" id="saldoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="exampleModalLabel">Saldos dos Participantes</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body"></div>
+                  </div>
+                </div>
+              </div>
         </div>
     </div>
 

@@ -67,3 +67,9 @@ body {
 #quit {
     margin-top: 20px;
 }
+
+#show {
+    height: fit-content;
+    margin-top: 22px;
+    margin-left: 10px;
+}
