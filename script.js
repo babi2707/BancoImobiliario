@@ -4,6 +4,7 @@ import {
   addDoc,
   getDocs,
   getDoc,
+  setDoc,
   query,
   where,
   doc,
@@ -31,6 +32,7 @@ const logoutButton = document.getElementById("logout");
 const quitButton = document.getElementById("quit");
 let listaUsers = [];
 const add = document.getElementById("adicionarUser");
+const editProfileForm = document.getElementById("editProfileForm");
 let currentUser;
 
 function atualizarDestinatarios() {
@@ -476,6 +478,81 @@ document.addEventListener("DOMContentLoaded", () => {
     showButton.addEventListener("click", () => {
       exibirSaldosModal();
     });
+  }
+
+  const profileIcon = document.getElementById("profileIcon");
+  const editProfileForm = document.getElementById("editProfileForm");
+
+  if (profileIcon) {
+    profileIcon.addEventListener("click", async () => {
+      // Pegar o usuário atual
+      const user = auth.currentUser;
+
+      if (!user) {
+        document.getElementById("userError").innerText =
+          "Nenhum usuário logado.";
+        return;
+      }
+
+      // Acessar a coleção de usuários
+      const usersRef = collection(db, "users");
+
+      // Obter o documento do usuário logado
+      const q = query(usersRef, where("uid", "==", user.uid));
+      const querySnapshot = await getDocs(q);
+
+      // Assumimos que há apenas um documento por usuário
+      const userDoc = querySnapshot.docs[0];
+      const userData = userDoc.data();
+
+      document.getElementById("username").value = userData.user;
+      document.getElementById("email").value = user.email;
+      document.getElementById("fullName").value = userData.nome;
+    });
+  }
+
+  if (editProfileForm) {
+    editProfileForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const username = document.getElementById("username").value;
+      const email = document.getElementById("email").value;
+      const fullName = document.getElementById("fullName").value;
+
+      try {
+        const user = auth.currentUser;
+
+        if (!user) {
+          document.getElementById("userError").innerText =
+            "Nenhum usuário logado.";
+          return;
+        }
+  
+        // Acessar a coleção de usuários
+        const usersRef = collection(db, "users");
+  
+        // Obter o documento do usuário logado
+        const q = query(usersRef, where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+  
+        // Assumimos que há apenas um documento por usuário
+        const userDoc = querySnapshot.docs[0];
+        const userData = userDoc.data();
+        
+          if (username !== userData.user || email !== user.email) {
+            await user.updateProfile({
+              user: username,
+              email: email,
+          });
+          await updateDoc(usersRef, { 
+            nome: fullName, 
+          });
+          alert("Perfil atualizado com sucesso!");
+        }
+      } catch (error) {
+        console.error("Erro ao atualizar perfil:", error);
+        alert("Erro ao atualizar perfil: " + error.message);
+      }
+    };
   }
 });
 
