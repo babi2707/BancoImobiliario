@@ -508,7 +508,7 @@ if (quitButton !== null) {
       const user = auth.currentUser;
 
       if (!user) {
-        document.getElementById("userErro").innerText =
+        document.getElementById("userError").innerText =
           "Nenhum usuário logado.";
         return;
       }
@@ -521,7 +521,7 @@ if (quitButton !== null) {
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        document.getElementById("userErro").innerText =
+        document.getElementById("userError").innerText =
           "Usuário não encontrado no banco de dados.";
         return;
       }
@@ -541,15 +541,15 @@ if (quitButton !== null) {
         saldoElement.innerText = novoSaldo.toFixed(2);
       }
 
-      document.getElementById("userInst").innerText =
+      document.getElementById("userEncerr").innerText =
         "Saldo redefinido para R$ 27000,00.";
 
       setTimeout(() => {
-        document.getElementById("userInst").style.display = "none";
+        document.getElementById("userEncerr").style.display = "none";
       }, 5000);
     } catch (error) {
       console.error("Erro ao redefinir o saldo: ", error);
-      document.getElementById("userErro").innerText =
+      document.getElementById("userError").innerText =
         "Erro ao redefinir o saldo: " + error.message;
     }
   });

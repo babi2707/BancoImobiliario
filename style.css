@@ -19,6 +19,7 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-left: 10px;
     margin-right: 10px;
+    margin-bottom: 50px;
 }
 
 .btn-gradient {
@@ -50,6 +51,12 @@ body {
     margin-bottom: 20px;
 }
 
+#userEncerr {
+    color: green;
+    font-size: 15px;
+    margin-bottom: 20px;
+}
+
 #usuarioName {
     font-size: large;
     margin: 10px;
@@ -64,12 +71,17 @@ body {
     margin-left: 5px;
 }
 
+#logout {
+    margin-top: 20px;
+    height: 40px;
+}
+
 #quit {
     margin-top: 20px;
+    height: 40px;
 }
 
 #show {
-    height: fit-content;
-    margin-top: 22px;
-    margin-left: 10px;
+    height: 40px;
+    margin-top: 21px;
 }
