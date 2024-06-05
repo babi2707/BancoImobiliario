@@ -426,6 +426,14 @@ if (add !== null) {
 async function carregarSaldosEmTempoReal() {
   try {
     const usersRef = collection(db, "users");
+
+    // Verificar se há usuários na lista
+    if (listaUsers.length === 0) {
+      const saldosUsuarios = document.getElementById("saldosUsuarios");
+      saldosUsuarios.innerHTML = ""; // Limpar os saldos existentes
+      return; // Não há usuários, então não há necessidade de continuar
+    }
+
     const usersQuery = query(usersRef, where("user", "in", listaUsers));
 
     // Observar os documentos dos usuários na lista em tempo real
@@ -452,7 +460,6 @@ async function carregarSaldosEmTempoReal() {
 }
 
 async function exibirSaldosModal() {
-  console.log("Exibindo saldos modal"); // Adiciona este log para verificar se a função é chamada
   // Carregar os saldos em tempo real
   const unsubscribe = await carregarSaldosEmTempoReal();
 
