@@ -19,7 +19,12 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  updateEmail,
   signOut,
+  updateProfile,
+  reauthenticateWithCredential, 
+  EmailAuthProvider, 
+  sendEmailVerification,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -51,6 +56,7 @@ export {
   getDoc,
   setDoc,
   updateDoc,
+  updateEmail,
   doc,
   query,
   where,
@@ -60,4 +66,8 @@ export {
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
+  updateProfile,
+  reauthenticateWithCredential, 
+  EmailAuthProvider, 
+  sendEmailVerification,
 };

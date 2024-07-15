@@ -5,6 +5,7 @@ import {
   getDocs,
   getDoc,
   setDoc,
+  updateEmail,
   query,
   where,
   doc,
@@ -16,6 +17,10 @@ import {
   updateDoc,
   onAuthStateChanged,
   onSnapshot,
+  updateProfile,
+  reauthenticateWithCredential, 
+  EmailAuthProvider, 
+  sendEmailVerification,
 } from "./firebase.js";
 
 const formCadastro = document.getElementById("formC");
@@ -59,10 +64,10 @@ if (formCadastro !== null) {
     event.preventDefault();
 
     let dados = {
-      nome: document.getElementById("fullname").value,
-      user: document.getElementById("username").value,
-      email: document.getElementById("email").value,
-      senha: document.getElementById("password").value,
+      nome: document.getElementById("fullname").value.trim(),
+      user: document.getElementById("username").value.trim(),
+      email: document.getElementById("email").value.trim(),
+      senha: document.getElementById("password").value.trim(),
       saldo: 27000.0,
     };
 
@@ -472,89 +477,111 @@ async function exibirSaldosModal() {
   });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const showButton = document.getElementById("show");
-  if (showButton) {
-    showButton.addEventListener("click", () => {
-      exibirSaldosModal();
-    });
-  }
+// document.addEventListener("DOMContentLoaded", () => {
+//   const showButton = document.getElementById("show");
+//   if (showButton) {
+//     showButton.addEventListener("click", () => {
+//       exibirSaldosModal();
+//     });
+//   }
 
-  const profileIcon = document.getElementById("profileIcon");
-  const editProfileForm = document.getElementById("editProfileForm");
+//   const profileIcon = document.getElementById("profileIcon");
+//   const editProfileForm = document.getElementById("editProfileForm");
 
-  if (profileIcon) {
-    profileIcon.addEventListener("click", async () => {
-      // Pegar o usuário atual
-      const user = auth.currentUser;
+//   if (profileIcon) {
+//     profileIcon.addEventListener("click", async () => {
+//       const user = auth.currentUser;
 
-      if (!user) {
-        document.getElementById("userError").innerText =
-          "Nenhum usuário logado.";
-        return;
-      }
+//       if (!user) {
+//         document.getElementById("userError").innerText = "Nenhum usuário logado.";
+//         return;
+//       }
 
-      // Acessar a coleção de usuários
-      const usersRef = collection(db, "users");
+//       const usersRef = collection(db, "users");
+//       const q = query(usersRef, where("uid", "==", user.uid));
+//       const querySnapshot = await getDocs(q);
 
-      // Obter o documento do usuário logado
-      const q = query(usersRef, where("uid", "==", user.uid));
-      const querySnapshot = await getDocs(q);
+//       const userDoc = querySnapshot.docs[0];
+//       const userData = userDoc.data();
 
-      // Assumimos que há apenas um documento por usuário
-      const userDoc = querySnapshot.docs[0];
-      const userData = userDoc.data();
+//       document.getElementById("username").value = userData.user;
+//       document.getElementById("email").value = user.email;
+//       document.getElementById("fullName").value = userData.nome;
+//     });
+//   }
 
-      document.getElementById("username").value = userData.user;
-      document.getElementById("email").value = user.email;
-      document.getElementById("fullName").value = userData.nome;
-    });
-  }
+//   if (editProfileForm) {
+//     editProfileForm.onsubmit = async (e) => {
+//       e.preventDefault();
+//       const username = document.getElementById("username").value;
+//       const email = document.getElementById("email").value;
+//       const fullName = document.getElementById("fullName").value;
 
-  if (editProfileForm) {
-    editProfileForm.onsubmit = async (e) => {
-      e.preventDefault();
-      const username = document.getElementById("username").value;
-      const email = document.getElementById("email").value;
-      const fullName = document.getElementById("fullName").value;
+//       try {
+//         const user = auth.currentUser;
 
-      try {
-        const user = auth.currentUser;
+//         if (!user) {
+//           document.getElementById("userError").innerText = "Nenhum usuário logado.";
+//           return;
+//         }
 
-        if (!user) {
-          document.getElementById("userError").innerText =
-            "Nenhum usuário logado.";
-          return;
-        }
-  
-        // Acessar a coleção de usuários
-        const usersRef = collection(db, "users");
-  
-        // Obter o documento do usuário logado
-        const q = query(usersRef, where("uid", "==", user.uid));
-        const querySnapshot = await getDocs(q);
-  
-        // Assumimos que há apenas um documento por usuário
-        const userDoc = querySnapshot.docs[0];
-        const userData = userDoc.data();
-        
-          if (username !== userData.user || email !== user.email) {
-            await user.updateProfile({
-              user: username,
-              email: email,
-          });
-          await updateDoc(usersRef, { 
-            nome: fullName, 
-          });
-          alert("Perfil atualizado com sucesso!");
-        }
-      } catch (error) {
-        console.error("Erro ao atualizar perfil:", error);
-        alert("Erro ao atualizar perfil: " + error.message);
-      }
-    };
-  }
-});
+//         console.log("Usuário logado:", user);
+
+//         if (email !== user.email) {
+//           await updateEmail(user, email);
+//           console.log("Email atualizado:", email);
+//         }
+
+//         const usersRef = collection(db, "users");
+//         const q = query(usersRef, where("uid", "==", user.uid));
+//         const querySnapshot = await getDocs(q);
+
+//         if (querySnapshot.empty) {
+//           console.error("Nenhum documento encontrado para o usuário logado.");
+//           alert("Erro: Nenhum documento encontrado para o usuário logado.");
+//           return;
+//         }
+
+//         const userDoc = querySnapshot.docs[0];
+//         const userDocRef = doc(db, "users", userDoc.id);
+
+//         console.log("Documento do usuário encontrado:", userDoc.data());
+
+//         let profileUpdated = false;
+//         if (username !== user.displayName) {
+//           await updateProfile(user, { displayName: username });
+//           console.log("Nome de usuário atualizado no Firebase Auth:", username);
+//           profileUpdated = true;
+//         }
+
+//         if (fullName !== userDoc.data().nome) {
+//           console.log("Tentando atualizar nome completo no Firestore:", fullName);
+//           await updateDoc(userDocRef, { nome: fullName })
+//             .then(() => {
+//               console.log("Nome completo atualizado no Firestore:", fullName);
+//               profileUpdated = true;
+//             })
+//             .catch((error) => {
+//               console.error("Erro ao atualizar nome no Firestore:", error);
+//               alert("Erro ao atualizar nome no Firestore: " + error.message);
+//             });
+//         }
+
+//         if (profileUpdated) {
+//           alert("Perfil atualizado com sucesso!");
+
+//           const usuarioNameElement = document.getElementById("usuarioName");
+//           usuarioNameElement.innerText = username;
+//         } else {
+//           alert("Nenhuma atualização necessária.");
+//         }
+//       } catch (error) {
+//         console.error("Erro ao atualizar perfil:", error);
+//         alert("Erro ao atualizar perfil: " + error.message);
+//       }
+//     };
+//   }
+// });
 
 function logoutUser() {
   signOut(auth)
